@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/Mooky0/ocr-webapp.git
     targetRevision: HEAD
-    path: charts/ocr-backend
+    path: infra/charts/ocr-backend
     helm:
       valueFiles:
         - values.yaml
