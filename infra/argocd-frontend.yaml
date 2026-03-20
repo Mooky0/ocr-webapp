@@ -1,14 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ocr-system
+  name: ocr-frontend
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://github.com/Mooky0/ocr-webapp.git
     targetRevision: HEAD
-    path: infra/charts/ocr-backend
+    path: infra/charts/ocr-frontend
     helm:
       valueFiles:
         - values.yaml
