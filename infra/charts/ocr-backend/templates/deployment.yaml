@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-backend
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: ocr-backend
+  template:
+    metadata:
+      labels:
+        app: ocr-backend
+    spec:
+      containers:
+      - name: backend
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        ports:
+        - containerPort: {{ .Values.service.port }}
+        env:
+        - name: DATABASE_URL
+          value: {{ .Values.env.dbUrl | quote }}
+        - name: MINIO_URL
+          value: {{ .Values.env.minioUrl | quote }}
+        - name: MINIO_ROOT_USER
+          value: {{ .Values.env.minioRootUser | quote }}
+        - name: MINIO_ROOT_PASSWORD
+          value: {{ .Values.env.minioRootPassword | quote }}

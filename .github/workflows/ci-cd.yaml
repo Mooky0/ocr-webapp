@@ -1,11 +1,64 @@
 name: CI/CD Pipeline
-on: [push]
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: write
+  packages: write
+
 jobs:
-  build-and-test:
+  build-and-push:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Build Backend
-        run: docker build -t ocr-backend ./apps/backend-api
-      - name: Build Frontend
-        run: docker build -t ocr-frontend ./apps/frontend
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set Image Names and Tag
+        id: vars
+        run: |
+          TAG=$(echo ${{ github.sha }} | cut -c1-7)
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "backend_image=ghcr.io/$OWNER/ocr-backend" >> $GITHUB_OUTPUT
+          echo "frontend_image=ghcr.io/$OWNER/ocr-frontend" >> $GITHUB_OUTPUT
+
+      - name: Build and Push Backend
+        run: |
+          docker build -t ${{ steps.vars.outputs.backend_image }}:${{ steps.vars.outputs.tag }} \
+                       -t ${{ steps.vars.outputs.backend_image }}:latest ./apps/backend-api
+          docker push ${{ steps.vars.outputs.backend_image }}:${{ steps.vars.outputs.tag }}
+          docker push ${{ steps.vars.outputs.backend_image }}:latest
+
+      - name: Build and Push Frontend
+        run: |
+          docker build -t ${{ steps.vars.outputs.frontend_image }}:${{ steps.vars.outputs.tag }} \
+                       -t ${{ steps.vars.outputs.frontend_image }}:latest ./apps/frontend
+          docker push ${{ steps.vars.outputs.frontend_image }}:${{ steps.vars.outputs.tag }}
+          docker push ${{ steps.vars.outputs.frontend_image }}:latest
+
+      - name: Update Helm Manifests
+        run: |
+          TAG=${{ steps.vars.outputs.tag }}
+          
+          # Backend frissítése
+          sed -i "s/tag: .*/tag: \"$TAG\"/" infra/charts/ocr-backend/values.yaml
+          
+          # Frontend frissítése
+          sed -i "s/tag: .*/tag: \"$TAG\"/" infra/charts/ocr-frontend/values.yaml
+          
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+          git add .
+          git commit -m "Update images to $TAG [skip ci]"
+          git push
