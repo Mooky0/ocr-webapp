@@ -1,0 +1,11 @@
+name: CI/CD Pipeline
+on: [push]
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build Backend
+        run: docker build -t ocr-backend ./apps/backend-api
+      - name: Build Frontend
+        run: docker build -t ocr-frontend ./apps/frontend

@@ -1,0 +1,43 @@
+services:
+  backend:
+    build: ../apps/backend-api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://user:pass@postgres:5432/ocrdb
+      - MINIO_URL=minio:9000
+    depends_on:
+      - postgres
+      - minio
+
+  frontend:
+    build: ../apps/frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: ocrdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: password
+    volumes:
+      - minio_data:/data
+
+volumes:
+  postgres_data:
+  minio_data:
