@@ -3,6 +3,7 @@ import os
 from typing import Generator
 from uuid import uuid4
 from fastapi import Depends, FastAPI, File, Form, HTTPException, Response, UploadFile, status
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, Session
 from minio import Minio
@@ -48,6 +49,13 @@ def get_minio() -> Minio:
     return minio_client
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.get("/")
@@ -130,7 +138,8 @@ async def upload_image(
         "top": ocr_result["top"][i],
         "width": ocr_result["width"][i],
         "height": ocr_result["height"][i],
-    } for i in range(len(ocr_result.get("text", []))) if ocr_result["text"][i].strip() != ""]
+    } for i in range(len(ocr_result.get("text", []))) if ocr_result["text"][i].stri
+    p() != ""]
 
     db.commit()
 
@@ -139,7 +148,7 @@ async def upload_image(
 @app.get("/images/")
 def list_images(db: Session = Depends(get_db)):
     images = db.query(Image).all()
-    return [{"id": str(image.id), "filename": image.filename} for image in images]
+    return [{"id": str(image.id), "filename": image.filename, "description": image.description} for image in images]
 
 @app.get("/images/{image_id}")
 def get_image(image_id: str, db: Session = Depends(get_db)):

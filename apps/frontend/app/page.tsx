@@ -1,10 +1,95 @@
-import Image from "next/image";
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import {
+  Box,
+  Container,
+  Paper,
+  Stack,
+  Typography,
+} from "@mui/material";
+import DocumentScannerIcon from "@mui/icons-material/DocumentScanner";
+import UploadForm from "./components/UploadForm";
+import ImageList from "./components/ImageList";
+import ImageDetail from "./components/ImageDetail";
+import { listImages, ImageSummary } from "./lib/api";
 
 export default function Home() {
+  const [images, setImages] = useState<ImageSummary[]>([]);
+  const [loadingList, setLoadingList] = useState(true);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const fetchImages = useCallback(async () => {
+    setLoadingList(true);
+    try {
+      const data = await listImages();
+      setImages(data);
+    } finally {
+      setLoadingList(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchImages();
+  }, [fetchImages]);
+
+  function handleUploaded() {
+    fetchImages();
+  }
+
+  function handleSelect(id: string) {
+    setSelectedId((prev) => (prev === id ? null : id));
+  }
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-between p-24">
-      <h1 className="text-4xl font-bold">Welcome to the Frontend App!</h1>
-      <p className="mt-4 text-lg">This is the homepage of the frontend application.</p>
-    </div>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Stack spacing={4}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <DocumentScannerIcon color="primary" fontSize="large" />
+          <Typography variant="h5" sx={{ fontWeight: 600 }}>
+            OCR Web App
+          </Typography>
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", md: "row" },
+            gap: 3,
+            alignItems: "flex-start",
+          }}
+        >
+          <Paper variant="outlined" sx={{ p: 3, minWidth: 280, width: { xs: "100%", md: 320 } }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>
+              Upload image
+            </Typography>
+            <UploadForm onUploaded={handleUploaded} />
+          </Paper>
+
+          <Box sx={{ flex: 1, width: "100%" }}>
+            {selectedId ? (
+              <Paper variant="outlined" sx={{ p: 3 }}>
+                <ImageDetail
+                  id={selectedId}
+                  onClose={() => setSelectedId(null)}
+                />
+              </Paper>
+            ) : (
+              <Stack spacing={2}>
+                <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                  Uploaded images
+                </Typography>
+                <ImageList
+                  images={images}
+                  loading={loadingList}
+                  selectedId={selectedId}
+                  onSelect={handleSelect}
+                />
+              </Stack>
+            )}
+          </Box>
+        </Box>
+      </Stack>
+    </Container>
   );
 }
