@@ -138,8 +138,7 @@ async def upload_image(
         "top": ocr_result["top"][i],
         "width": ocr_result["width"][i],
         "height": ocr_result["height"][i],
-    } for i in range(len(ocr_result.get("text", []))) if ocr_result["text"][i].stri
-    p() != ""]
+    } for i in range(len(ocr_result.get("text", []))) if ocr_result["text"][i].strip() != ""]
 
     db.commit()
 
