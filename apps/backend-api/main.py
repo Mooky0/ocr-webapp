@@ -119,6 +119,7 @@ async def upload_image(
             content_type=file.content_type, # type: ignore
         )
     except Exception as e:
+        logger.exception(f"MinIO upload failed: {e}")
         raise HTTPException(status_code=500, detail=f"MinIO upload failed: {e}")
 
     record = Image(
@@ -130,7 +131,12 @@ async def upload_image(
     db.commit()
     db.refresh(record)
 
-    ocr_result = ocr.run_ocr(contents)
+    try:
+        ocr_result = ocr.run_ocr(contents)
+    except Exception as e:
+        logger.exception(f"OCR failed: {e}")
+        raise HTTPException(status_code=500, detail=f"OCR failed: {e}")
+
     record.ocr_text = " ".join(ocr_result.get("text", []))
     record.ocr_boxes = [{
         "text": ocr_result["text"][i],
