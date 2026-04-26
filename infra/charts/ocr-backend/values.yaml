@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: "ghcr.io/mooky0/ocr-backend"
-  tag: "42680cd"
+  tag: "eb4ecb0"
 
 service:
   port: 8000
