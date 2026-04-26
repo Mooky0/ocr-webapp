@@ -18,7 +18,7 @@ spec:
         ports:
         - containerPort: 3000
         env:
-        - name: NEXT_PUBLIC_API_URL
+        - name: API_URL
           value: "http://ocr-backend:8000"
 ---
 apiVersion: v1

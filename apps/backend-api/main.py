@@ -144,7 +144,7 @@ async def upload_image(
 
     return {"id": str(record.id), "filename": record.filename}
 
-@app.get("/images/")
+@app.get("/images")
 def list_images(db: Session = Depends(get_db)):
     images = db.query(Image).all()
     return [{"id": str(image.id), "filename": image.filename, "description": image.description} for image in images]

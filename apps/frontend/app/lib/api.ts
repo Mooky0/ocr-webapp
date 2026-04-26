@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000",
+  baseURL: "/backend",
 });
 
 export interface ImageSummary {
@@ -27,7 +27,7 @@ export interface ImageDetail {
 }
 
 export async function listImages(): Promise<ImageSummary[]> {
-  const { data } = await api.get<ImageSummary[]>("/images/");
+  const { data } = await api.get<ImageSummary[]>("/images");
   return data;
 }
 
@@ -45,6 +45,5 @@ export async function uploadImage(file: File, description: string): Promise<Imag
 }
 
 export function imageFileUrl(id: string): string {
-  const base = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
-  return `${base}/images/${id}/file`;
+  return `/backend/images/${id}/file`;
 }
