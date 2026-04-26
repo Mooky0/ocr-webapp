@@ -98,6 +98,9 @@ def get_status(
 
 MINIO_BUCKET = os.getenv("MINIO_BUCKET", "images")
 
+if not minio_client.bucket_exists(MINIO_BUCKET):
+    minio_client.make_bucket(MINIO_BUCKET)
+
 @app.post("/images", status_code=status.HTTP_201_CREATED)
 async def upload_image(
     file: UploadFile = File(...),
