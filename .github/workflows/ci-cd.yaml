@@ -35,6 +35,7 @@ jobs:
           echo "tag=$TAG" >> $GITHUB_OUTPUT
           echo "backend_image=ghcr.io/$OWNER/ocr-backend" >> $GITHUB_OUTPUT
           echo "frontend_image=ghcr.io/$OWNER/ocr-frontend" >> $GITHUB_OUTPUT
+          echo "worker_image=ghcr.io/$OWNER/ocr-worker" >> $GITHUB_OUTPUT
 
       - name: Build and Push Backend
         run: |
@@ -54,13 +55,22 @@ jobs:
             ./apps/frontend \
             --push
 
+      - name: Build and Push OCR Worker
+        run: |
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            -t ${{ steps.vars.outputs.worker_image }}:${{ steps.vars.outputs.tag }} \
+            -t ${{ steps.vars.outputs.worker_image }}:latest \
+            ./apps/ocr-worker \
+            --push
+
       - name: Update Helm Manifests
         run: |
           TAG=${{ steps.vars.outputs.tag }}
-          
-          # Backend frissítése
+
+          # Backend + worker frissítése
           sed -i "s/tag: .*/tag: \"$TAG\"/" infra/charts/ocr-backend/values.yaml
-          
+
           # Frontend frissítése
           sed -i "s/tag: .*/tag: \"$TAG\"/" infra/charts/ocr-frontend/values.yaml
           

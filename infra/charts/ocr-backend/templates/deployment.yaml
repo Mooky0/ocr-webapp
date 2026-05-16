@@ -45,3 +45,5 @@ spec:
           value: {{ .Values.env.minioRootUser | quote }}
         - name: MINIO_ROOT_PASSWORD
           value: {{ .Values.env.minioRootPassword | quote }}
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: {{ .Values.env.kafkaBootstrapServers | quote }}

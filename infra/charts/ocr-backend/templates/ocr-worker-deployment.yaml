@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ocr-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ocr-worker
+  template:
+    metadata:
+      labels:
+        app: ocr-worker
+    spec:
+      containers:
+      - name: ocr-worker
+        image: "{{ .Values.ocrWorker.image.repository }}:{{ .Values.ocrWorker.image.tag }}"
+        env:
+        - name: KAFKA_BOOTSTRAP_SERVERS
+          value: {{ .Values.env.kafkaBootstrapServers | quote }}
+        - name: MINIO_URL
+          value: {{ .Values.env.minioUrl | quote }}
+        - name: MINIO_ROOT_USER
+          value: {{ .Values.env.minioRootUser | quote }}
+        - name: MINIO_ROOT_PASSWORD
+          value: {{ .Values.env.minioRootPassword | quote }}
+        - name: MINIO_BUCKET
+          value: "images"
