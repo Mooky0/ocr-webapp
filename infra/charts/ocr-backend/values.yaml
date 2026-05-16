@@ -2,12 +2,12 @@ replicaCount: 1
 
 image:
   repository: "ghcr.io/mooky0/ocr-backend"
-  tag: "eb4ecb0"
+  tag: "8a8c435"
 
 ocrWorker:
   image:
     repository: "ghcr.io/mooky0/ocr-worker"
-    tag: "eb4ecb0"
+    tag: "8a8c435"
 
 service:
   port: 8000
