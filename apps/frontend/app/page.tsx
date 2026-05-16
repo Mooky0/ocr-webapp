@@ -30,9 +30,24 @@ export default function Home() {
     }
   }, []);
 
+  const refreshImages = useCallback(async () => {
+    const data = await listImages();
+    setImages(data);
+  }, []);
+
   useEffect(() => {
     fetchImages();
   }, [fetchImages]);
+
+  const hasPending = images.some(
+    (img) => img.ocr_status === "pending" || img.ocr_status === "processing"
+  );
+
+  useEffect(() => {
+    if (!hasPending) return;
+    const id = setInterval(refreshImages, 3000);
+    return () => clearInterval(id);
+  }, [hasPending, refreshImages]);
 
   function handleUploaded() {
     fetchImages();

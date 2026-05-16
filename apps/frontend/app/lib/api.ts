@@ -8,6 +8,7 @@ export interface ImageSummary {
   id: string;
   filename: string;
   description: string;
+  ocr_status: "pending" | "processing" | "completed" | "failed";
 }
 
 export interface OcrBox {
@@ -47,8 +48,15 @@ export async function uploadImage(file: File, description: string): Promise<Imag
 export async function notificationSubscribe(email:string) {
   const form = new FormData();
   form.append("email", email);
-  const { data } = await api.post("/subscribe", form);
-  return data;
+  try {
+    const { data } = await api.post("/subscribe", form);
+    return data;
+  } catch (err) {
+    if (axios.isAxiosError(err)) {
+      throw new Error(err.response?.data?.detail ?? "Subscription failed.");
+    }
+    throw err;
+  }
 }
 
 export function imageFileUrl(id: string): string {

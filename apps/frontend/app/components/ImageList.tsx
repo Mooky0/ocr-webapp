@@ -8,9 +8,33 @@ import {
   CardContent,
   CircularProgress,
   Grid,
+  Tooltip,
   Typography,
 } from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ErrorIcon from "@mui/icons-material/Error";
+import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
 import { ImageSummary, imageFileUrl } from "../lib/api";
+
+function OcrStatusIcon({ status }: { status: ImageSummary["ocr_status"] }) {
+  if (status === "completed")
+    return (
+      <Tooltip title="OCR complete">
+        <CheckCircleIcon fontSize="small" color="success" />
+      </Tooltip>
+    );
+  if (status === "failed")
+    return (
+      <Tooltip title="OCR failed">
+        <ErrorIcon fontSize="small" color="error" />
+      </Tooltip>
+    );
+  return (
+    <Tooltip title={status === "processing" ? "Processing…" : "Pending"}>
+      <HourglassEmptyIcon fontSize="small" color="disabled" />
+    </Tooltip>
+  );
+}
 
 interface Props {
   images: ImageSummary[];
@@ -59,9 +83,12 @@ export default function ImageList({ images, loading, selectedId, onSelect }: Pro
                 <Typography variant="caption" sx={{ display: "block", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                   {img.description}
                 </Typography>
-                <Typography variant="body2" sx={{ color: "text.secondary", mt: 1 }}>
-                  {img.filename}
-                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 1 }}>
+                  <OcrStatusIcon status={img.ocr_status} />
+                  <Typography variant="body2" sx={{ color: "text.secondary", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {img.filename}
+                  </Typography>
+                </Box>
               </CardContent>
             </CardActionArea>
           </Card>

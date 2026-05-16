@@ -48,3 +48,13 @@ spec:
           value: {{ .Values.env.minioRootPassword | quote }}
         - name: KAFKA_BOOTSTRAP_SERVERS
           value: {{ .Values.env.kafkaBootstrapServers | quote }}
+        - name: SENDER_EMAIL
+          valueFrom:
+            secretKeyRef:
+              name: gmail-secret
+              key: SENDER_EMAIL
+        - name: PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: gmail-secret
+              key: PASSWORD

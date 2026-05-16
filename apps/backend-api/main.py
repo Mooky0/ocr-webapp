@@ -16,6 +16,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session, sessionmaker
 
 from models import Base, Image, NotificationSubscription
+from notification import send_notification
 
 load_dotenv()
 
@@ -94,13 +95,7 @@ async def consume_ocr_results():
 
                 # Notify subscribers
                 subscribers = db.query(NotificationSubscription).all()
-                for sub in subscribers:
-                    logger.info(
-                        f"[NOTIFICATION] → {sub.email} | "
-                        f"Image: {image.filename} | "
-                        f"Description: {image.description} | "
-                        f"OCR text: {image.ocr_text}"
-                    )
+                send_notification(subscribers, image)
             finally:
                 db.close()
     except asyncio.CancelledError:
