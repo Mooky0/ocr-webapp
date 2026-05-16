@@ -8,7 +8,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, Session
 from minio import Minio
 from dotenv import load_dotenv
-from models import Base, Image
+from models import Base, Image, NotificationSubscription
 import ocr
 
 load_dotenv()
@@ -183,3 +183,14 @@ def download_image(id: str, db: Session = Depends(get_db), minio: Minio = Depend
         return Response(content=response.read(), media_type="application/octet-stream")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"MinIO download failed: {e}")
+    
+@app.post("/subscribe")
+def subscribe(email: str = Form(...), db: Session = Depends(get_db)):
+    existing = db.query(NotificationSubscription).filter(NotificationSubscription.email == email).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already subscribed")
+    
+    subscription = NotificationSubscription(email=email)
+    db.add(subscription)
+    db.commit()
+    return {"message": "Subscribed successfully"}

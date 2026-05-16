@@ -13,6 +13,7 @@ import UploadForm from "./components/UploadForm";
 import ImageList from "./components/ImageList";
 import ImageDetail from "./components/ImageDetail";
 import { listImages, ImageSummary } from "./lib/api";
+import NotificationForm from "./components/NotificationForm";
 
 export default function Home() {
   const [images, setImages] = useState<ImageSummary[]>([]);
@@ -59,12 +60,24 @@ export default function Home() {
             alignItems: "flex-start",
           }}
         >
-          <Paper variant="outlined" sx={{ p: 3, minWidth: 280, width: { xs: "100%", md: 320 } }}>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>
-              Upload image
-            </Typography>
-            <UploadForm onUploaded={handleUploaded} />
-          </Paper>
+          <Box
+            sx={{ display: "flex", flexDirection: "column", gap: 3, width: { xs: "100%", md: 320 } }}
+          >
+            <Paper variant="outlined" sx={{ p: 3, minWidth: 280, width: { xs: "100%", md: 320 } }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>
+                Upload image
+              </Typography>
+              <UploadForm onUploaded={handleUploaded} />
+            </Paper>
+
+            <Paper variant="outlined" sx={{ p: 3, minWidth: 280, width: { xs: "100%", md: 320 } }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 2 }}>
+                Subscribe to notifications
+              </Typography>
+              <NotificationForm onUploaded={handleUploaded} />
+            </Paper>
+
+          </Box>
 
           <Box sx={{ flex: 1, width: "100%" }}>
             {selectedId ? (

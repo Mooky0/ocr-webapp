@@ -17,3 +17,7 @@ class Image(Base):
     ocr_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     ocr_boxes: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
 
+class NotificationSubscription(Base):
+    __tablename__ = "notification_subscriptions"
+    id: Mapped[uuid.UUID] = mapped_column(primary_key=True, default=uuid4)
+    email: Mapped[str] = mapped_column(String, unique=True)

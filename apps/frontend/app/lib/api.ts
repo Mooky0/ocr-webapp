@@ -44,6 +44,13 @@ export async function uploadImage(file: File, description: string): Promise<Imag
   return data;
 }
 
+export async function notificationSubscribe(email:string) {
+  const form = new FormData();
+  form.append("email", email);
+  const { data } = await api.post("/subscribe", form);
+  return data;
+}
+
 export function imageFileUrl(id: string): string {
   return `/backend/images/${id}/file`;
 }
