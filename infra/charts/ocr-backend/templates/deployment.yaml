@@ -4,6 +4,7 @@ metadata:
   name: {{ .Release.Name }}-backend
 spec:
   replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 2
   selector:
     matchLabels:
       app: ocr-backend

@@ -4,6 +4,7 @@ metadata:
   name: {{ .Release.Name }}-frontend
 spec:
   replicas: 1
+  revisionHistoryLimit: 2
   selector:
     matchLabels:
       app: ocr-frontend
