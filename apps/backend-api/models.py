@@ -16,6 +16,7 @@ class Image(Base):
     filename: Mapped[str] = mapped_column(String)
     ocr_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     ocr_boxes: Mapped[Optional[list]] = mapped_column(JSON, nullable=True)
+    ocr_status: Mapped[str] = mapped_column(String, default="pending")
 
 class NotificationSubscription(Base):
     __tablename__ = "notification_subscriptions"

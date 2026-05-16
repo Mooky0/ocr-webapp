@@ -1,0 +1,5 @@
+kafka-python==2.0.2
+minio==7.2.20
+pillow==12.2.0
+pytesseract==0.3.13
+python-dotenv==1.2.2
